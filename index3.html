@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Antu's Model</title>
+  <meta charset="utf-8">
+</head>
+<body style="margin: 0;">
+	<p>Drag to rotate the object. Scroll to zoom in/out</p>
+  <script src="js/Three.js"></script>
+  <script src="js/OrbitControls.js"></script>
+  <script src="js/jquery.js"></script>
+  <script src="js/datGUI.js"></script>
+
+  <script>
+
+    // Set up the scene, camera, and renderer as global variables.
+    var scene, camera, renderer;
+
+    init();
+    animate();
+
+    function init() {
+
+      scene = new THREE.Scene();
+      var WIDTH = window.innerWidth,
+          HEIGHT = window.innerHeight;
+
+      renderer = new THREE.WebGLRenderer({antialias:true});
+      renderer.setSize(WIDTH, HEIGHT);
+      document.body.appendChild(renderer.domElement);
+
+      camera = new THREE.PerspectiveCamera(30, WIDTH / HEIGHT, 0.1, 20000);
+      camera.position.set(10, 10, 10);
+      scene.add(camera);
+
+      window.addEventListener('resize', function() {
+        var WIDTH = window.innerWidth,
+            HEIGHT = window.innerHeight;
+        renderer.setSize(WIDTH, HEIGHT);
+        camera.aspect = WIDTH / HEIGHT;
+        camera.updateProjectionMatrix();
+      });
+	  renderer.setClearColor(0xCAFEBABE);
+      // renderer.setClearColorHex(0x333F47, 1);
+
+      var light = new THREE.PointLight(0xffffff);
+      // light.position.set(100, 200, 100);
+      scene.add(light);
+
+      var loader = new THREE.JSONLoader();
+      loader.load( "js/Middle.js", function(geometry){
+        var material = new THREE.MeshLambertMaterial({color: 0xDEADBEEF});
+        mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+      });
+
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      
+      var gui = new DAT.GUI();
+	  var guiControls = new function() {
+			this.meshX = 1;
+			this.meshY = 1;
+			this.meshZ = 1;
+			this.cameraX = 1;
+			this.cameraY = 1;
+			this.cameraZ = 1;
+			this.lightX = 1;
+			this.lightY = 1;
+			this.lightZ = 1;
+		}
+		gui.add(guiControls, 'meshX', 0, 100).onChange(function(e) {
+			mesh.scale.x = e;
+		});
+		gui.add(guiControls, 'meshY', 0, 100).onChange(function(e) {
+			mesh.scale.y = e;
+		});
+		gui.add(guiControls, 'meshZ', 0, 100).onChange(function(e) {
+			mesh.scale.z = e;
+		});
+		gui.add(guiControls, 'cameraX', 0, 100).onChange(function(e) {
+			camera.position.x = e;
+		});
+		gui.add(guiControls, 'cameraY', 0, 100).onChange(function(e) {
+			camera.position.y = e;
+		});
+		gui.add(guiControls, 'cameraZ', 0, 100).onChange(function(e) {
+			camera.position.z = e;
+		});
+		gui.add(guiControls, 'lightX', -100, 100).onChange(function(e) {
+			light.position.x = e;
+		});
+		gui.add(guiControls, 'lightY', -100, 100).onChange(function(e) {
+			light.position.y = e;
+		});
+		gui.add(guiControls, 'lightZ', -100, 100).onChange(function(e) {
+			light.position.z = e;
+		});
+    }
+
+
+    // Renders the scene and updates the render as needed.
+    function animate() {
+
+      requestAnimationFrame(animate);
+      
+      // Render the scene.
+      renderer.render(scene, camera);
+      controls.update();
+
+    }
+
+  </script>
+
+</body>
+</html>
